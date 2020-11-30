@@ -1,4 +1,4 @@
-package com.example.audiovideo;
+package com.example.faded;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        moveBackAndForth.setEnabled(false);
         moveBackAndForth.setOnSeekBarChangeListener(MainActivity.this);
         moveBackAndForth.setMax(mediaPlayer.getDuration());
         mediaPlayer.setOnCompletionListener(MainActivity.this);
@@ -113,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 },0,1000);
                 btnPauseMusic.setEnabled(true);
+                moveBackAndForth.setEnabled(true);
 
 
                 break;
@@ -151,8 +153,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onCompletion(MediaPlayer mp) {
         if(mp==mediaPlayer){
             timer.cancel();
-            mediaPlayer.release();
             Toast.makeText(this,"Music is ended!",Toast.LENGTH_SHORT).show();
+            btnPauseMusic.setEnabled(false);
+            moveBackAndForth.setEnabled(false);
 
         }
     }

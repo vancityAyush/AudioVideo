@@ -1,4 +1,4 @@
-package com.example.audiovideo;
+package com.example.faded;
 
 import org.junit.Test;
 
