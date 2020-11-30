@@ -16,7 +16,9 @@ import android.widget.VideoView;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+//TODO app crashes on using seekbar when audio is not playing
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, MediaPlayer.OnCompletionListener {
 
     //Ui Components
     private VideoView myVideoView;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPlayVideo.setOnClickListener(MainActivity.this);
         btnPlayMusic.setOnClickListener(MainActivity.this);
         btnPauseMusic.setOnClickListener(MainActivity.this);
+        timer=new Timer();
 
         mediaController = new MediaController(MainActivity.this);
         mediaPlayer = MediaPlayer.create(this,R.raw.faded);
@@ -80,8 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         moveBackAndForth.setOnSeekBarChangeListener(MainActivity.this);
         moveBackAndForth.setMax(mediaPlayer.getDuration());
-
-
+        mediaPlayer.setOnCompletionListener(MainActivity.this);
 
 
     }
@@ -115,8 +117,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.btnPauseMusic:
-                mediaPlayer.pause();
-                timer.cancel();
+                if(mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                    timer.cancel();
+                }
                 break;
 
 
@@ -127,17 +131,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if(fromUser){
+            mediaPlayer.seekTo(progress);
 
         }
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
+             mediaPlayer.pause();
 
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+            mediaPlayer.start();
+    }
 
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        if(mp==mediaPlayer){
+            timer.cancel();
+            mediaPlayer.release();
+            Toast.makeText(this,"Music is ended!",Toast.LENGTH_SHORT).show();
+
+        }
     }
 }
