@@ -13,7 +13,10 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     //Ui Components
     private VideoView myVideoView;
@@ -21,8 +24,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private MediaPlayer mediaPlayer;
     private MediaController mediaController;
-    private SeekBar volumeSeekBar;
+    private SeekBar volumeSeekBar, moveBackAndForth;
     private AudioManager audioManager;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPlayMusic = findViewById(R.id.btnPlayMusic);
         btnPauseMusic = findViewById(R.id.btnPauseMusic);
         volumeSeekBar = findViewById(R.id.seekBarVolume);
+        moveBackAndForth = findViewById(R.id.seekBarMove);
 
         btnPlayVideo.setOnClickListener(MainActivity.this);
         btnPlayMusic.setOnClickListener(MainActivity.this);
@@ -73,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        moveBackAndForth.setOnSeekBarChangeListener(MainActivity.this);
+        moveBackAndForth.setMax(mediaPlayer.getDuration());
 
 
 
@@ -91,14 +98,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 myVideoView.start();
                 break;
             case R.id.btnPlayMusic:
+
                 mediaPlayer.start();
+                timer=new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+
+                        moveBackAndForth.setProgress(mediaPlayer.getCurrentPosition());
+
+
+                    }
+                },0,1000);
+                btnPauseMusic.setEnabled(true);
+
+
                 break;
             case R.id.btnPauseMusic:
                 mediaPlayer.pause();
+                timer.cancel();
                 break;
 
 
             }
 
         }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if(fromUser){
+
         }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+    }
+}
